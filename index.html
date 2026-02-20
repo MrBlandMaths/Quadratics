@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Quadratics Sprint (5 min)</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { max-width: 1100px; margin: 24px auto; padding: 0 16px; }
+    h1 { margin: 0 0 6px; }
+    .muted { color:#666; }
+    .row { display:grid; grid-template-columns: 1.2fr .8fr; gap: 14px; margin-top: 14px; }
+    @media (max-width: 900px){ .row{ grid-template-columns:1fr; } }
+
+    .card { border: 1px solid #ddd; border-radius: 14px; padding: 14px; }
+    .bar { display:flex; flex-wrap:wrap; gap: 10px; align-items:center; }
+    .pill { display:inline-flex; gap: 8px; align-items:center; padding: 6px 10px; border-radius: 999px; background:#f1f1f1; }
+    .bigTimer { font-size: 1.35rem; font-weight: 800; }
+    .problem { margin-top: 12px; padding: 12px 14px; border-radius: 12px; background:#f6f6f6; font-size: 1.35rem; }
+    .sub { font-size:.95rem; margin-top: 6px; color:#444; }
+
+    button, select {
+      font-size: 1rem; padding: 10px 12px; border-radius: 12px;
+      border: 1px solid #222; background:#222; color:#fff; cursor:pointer;
+    }
+    button.secondary { background:#fff; color:#222; border:1px solid #aaa; }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    select { background:#fff; color:#222; border:1px solid #aaa; }
+
+    .levels { display:grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+    @media (max-width: 700px){ .levels{ grid-template-columns:1fr 1fr; } }
+
+    .levelBtn {
+      width:100%;
+      background:#fff; color:#222; border:1px solid #aaa;
+      display:flex; flex-direction:column; gap:6px; align-items:flex-start;
+      padding: 12px;
+    }
+    .levelBtn.active { border:2px solid #222; }
+    .levelBtn .top { display:flex; justify-content:space-between; width:100%; align-items:center; }
+    .levelBtn .name { font-weight:800; }
+    .levelBtn .pts { font-weight:800; }
+    .levelBtn .desc { font-size:.92rem; color:#555; line-height:1.2; }
+    .lock { font-size: 1.05rem; }
+
+    .choicesWrap { margin-top: 12px; }
+    .choices { display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+    @media (max-width: 900px){ .choices{ grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 520px){ .choices{ grid-template-columns: repeat(3, 1fr); } }
+
+    .choice {
+      background:#fff; color:#222; border:1px solid #bbb; width:100%;
+      padding: 10px 8px; text-align:center; border-radius: 12px;
+      user-select:none;
+    }
+    .choice.selected { border:2px solid #222; background:#f0f0f0; }
+    .choice.correctReveal { border:2px solid #1a7f37; }
+    .choice.wrongReveal { border:2px solid #b42318; }
+
+    .feedback { margin-top: 12px; padding: 10px 12px; border-radius: 12px; }
+    .ok { background:#e7f7ea; border:1px solid #8bd39a; }
+    .no { background:#fdecec; border:1px solid #f0a0a0; }
+
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .grid3 { display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+    textarea { width:100%; box-sizing:border-box; padding: 10px 12px; border-radius: 12px; border:1px solid #ccc; }
+    code { background:#f3f3f3; padding: 2px 6px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Quadratics Sprint</h1>
+  <div class="muted">Five minutes. Unlimited questions. Choose a level, click the two solutions, score points.</div>
+
+  <div class="row">
+    <div class="card">
+      <div class="bar">
+        <span class="pill">Time: <span class="bigTimer" id="timer">05:00</span></span>
+        <span class="pill">Score: <strong id="score">0</strong></span>
+        <span class="pill">Correct: <strong id="correct">0</strong></span>
+        <span class="pill">Attempted: <strong id="attempted">0</strong></span>
+        <span class="pill">Unlocked: <strong id="unlockedLabel">1–1</strong></span>
+      </div>
+
+      <div class="grid2">
+        <button id="startBtn">Start 5-minute run</button>
+        <button id="resetBtn" class="secondary">Reset (no timer)</button>
+      </div>
+
+      <div class="levels" id="levels"></div>
+
+      <div class="problem" id="problemText">Press <strong>Start</strong> or <strong>Reset</strong> to begin.</div>
+      <div class="sub" id="instruction">Then pick a level and solve by selecting the two roots.</div>
+
+      <div class="choicesWrap">
+        <div class="muted" style="margin-bottom:8px;">
+          Selected: <strong id="selCount">0</strong>/2
+        </div>
+        <div class="choices" id="choices"></div>
+      </div>
+
+      <div class="grid3">
+        <button id="checkBtn">Check</button>
+        <button id="nextBtn" class="secondary">Next question</button>
+        <button id="revealBtn" class="secondary">Reveal (no points)</button>
+      </div>
+
+      <div id="feedback"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 8px;">How it works</h3>
+      <ul class="muted" style="margin-top:0;">
+        <li>Pick a level (higher levels are worth more points).</li>
+        <li>Click the <strong>two</strong> correct solutions, then press <strong>Check</strong>.</li>
+        <li>Get one correct at a level to unlock the next level.</li>
+        <li><strong>Reveal</strong> shows the answer but gives no points (useful for learning).</li>
+      </ul>
+
+      <h3>History</h3>
+      <textarea id="log" rows="11" readonly placeholder="Recent questions appear here..."></textarea>
+
+      <div class="muted" style="margin-top:10px;">
+        Teacher note: all questions are generated with <strong>integer roots</strong>, including the non-monic ones,
+        so selecting solutions stays clean and fast.
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ---------------- Utilities ---------------- */
+const el = (id) => document.getElementById(id);
+
+function randInt(min, max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pickNonZero(min, max){
+  let n = 0;
+  while(n === 0) n = randInt(min, max);
+  return n;
+}
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+function uniq(arr){
+  return [...new Set(arr)];
+}
+function fmtTime(sec){
+  const m = Math.floor(sec/60);
+  const s = sec % 60;
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+function prettyTrinomial(a,b,c){
+  // "ax² + bx + c" with tidy signs/spaces
+  const parts = [];
+  const pushTerm = (coef, label, isFirst=false)=>{
+    if(coef === 0) return;
+    const sign = coef > 0 ? '+' : '-';
+    const abs = Math.abs(coef);
+    const coefStr = (label && abs===1) ? '' : String(abs);
+    const term = label ? (coefStr + label) : coefStr;
+    if(isFirst){
+      parts.push((coef<0?'-':'') + term);
+    } else {
+      parts.push(` ${sign} ${term}`);
+    }
+  };
+  pushTerm(a,'x²', true);
+  pushTerm(b,'x', parts.length===0);
+  pushTerm(c,'', parts.length===0);
+  if(parts.length===0) return '0';
+  return parts.join('');
+}
+function factorisedText(r1, r2, k=1){
+  const f = (r)=> `(x${r<0?`+${-r}`:`-${r}`})`;
+  const lead = (k===1) ? '' : (k===-1 ? '-' : String(k));
+  return `${lead}${f(r1)}${f(r2)} = 0`;
+}
+
+/* ---------------- Levels ---------------- */
+const LEVELS = [
+  {
+    id: 1,
+    name: "Level 1",
+    pts: 1,
+    desc: "Already factorised (monic), e.g. (x+3)(x-6)=0",
+    generator: () => {
+      const r1 = pickNonZero(-9, 9);
+      let r2 = pickNonZero(-9, 9);
+      // allow repeats sometimes
+      if(Math.random() < 0.15) r2 = r1;
+      return {
+        level: 1,
+        pts: 1,
+        display: factorisedText(r1, r2, 1),
+        a: 1,
+        b: -(r1 + r2),
+        c: r1 * r2,
+        roots: [r1, r2].sort((x,y)=>x-y)
+      };
+    }
+  },
+  {
+    id: 2,
+    name: "Level 2",
+    pts: 4,
+    desc: "Monic expanded (easy factors), small products",
+    generator: () => {
+      // small roots and moderate product
+      let r1, r2;
+      while(true){
+        r1 = pickNonZero(-7, 7);
+        r2 = pickNonZero(-7, 7);
+        const prod = r1*r2;
+        if(Math.abs(prod) <= 36) break;
+      }
+      return {
+        level: 2,
+        pts: 4,
+        display: `${prettyTrinomial(1, -(r1+r2), r1*r2)} = 0`,
+        a: 1,
+        b: -(r1+r2),
+        c: r1*r2,
+        roots: [r1, r2].sort((x,y)=>x-y)
+      };
+    }
+  },
+  {
+    id: 3,
+    name: "Level 3",
+    pts: 6,
+    desc: "Monic expanded (harder factors), larger products",
+    generator: () => {
+      // larger range and product
+      let r1, r2;
+      while(true){
+        r1 = pickNonZero(-14, 14);
+        r2 = pickNonZero(-14, 14);
+        const prod = r1*r2;
+        // encourage “uglier” numbers but keep sane
+        if(Math.abs(prod) >= 40 && Math.abs(prod) <= 160) break;
+      }
+      return {
+        level: 3,
+        pts: 6,
+        display: `${prettyTrinomial(1, -(r1+r2), r1*r2)} = 0`,
+        a: 1,
+        b: -(r1+r2),
+        c: r1*r2,
+        roots: [r1, r2].sort((x,y)=>x-y)
+      };
+    }
+  },
+  {
+    id: 4,
+    name: "Level 4",
+    pts: 10,
+    desc: "Non-monic expanded, e.g. 2x²+7x-4=0",
+    generator: () => {
+      let r1, r2, k;
+      while(true){
+        r1 = pickNonZero(-10, 10);
+        r2 = pickNonZero(-10, 10);
+        // scale factor (a) not 1, avoid 0
+        k = pickNonZero(-4, 4);
+        if(Math.abs(k) !== 1) break;
+      }
+      const a = k;
+      const b = -k*(r1+r2);
+      const c = k*(r1*r2);
+      return {
+        level: 4,
+        pts: 10,
+        display: `${prettyTrinomial(a,b,c)} = 0`,
+        a,b,c,
+        roots: [r1, r2].sort((x,y)=>x-y)
+      };
+    }
+  }
+];
+
+/* ---------------- App state ---------------- */
+let unlockedMax = 1;              // highest unlocked level
+let activeLevel = 1;              // chosen level to generate from
+let currentQ = null;
+
+let selected = [];                // currently selected answer options (numbers)
+let running = false;              // timer running?
+let timeLeft = 300;               // 5 minutes
+let timerHandle = null;
+
+let stats = { score:0, correct:0, attempted:0 };
+
+function setFeedback(ok, html){
+  el("feedback").innerHTML = `<div class="feedback ${ok ? "ok" : "no"}">${html}</div>`;
+}
+
+function clearFeedback(){
+  el("feedback").innerHTML = "";
+}
+
+function updateHUD(){
+  el("timer").textContent = fmtTime(timeLeft);
+  el("score").textContent = stats.score;
+  el("correct").textContent = stats.correct;
+  el("attempted").textContent = stats.attempted;
+  el("selCount").textContent = selected.length;
+
+  el("unlockedLabel").textContent = `1–${unlockedMax}`;
+}
+
+function logLine(s){
+  const box = el("log");
+  const lines = box.value.trim() ? box.value.split("\n") : [];
+  lines.unshift(s);
+  box.value = lines.slice(0,10).join("\n");
+}
+
+/* ---------------- Level UI ---------------- */
+function renderLevels(){
+  const wrap = el("levels");
+  wrap.innerHTML = "";
+  for(const L of LEVELS){
+    const btn = document.createElement("button");
+    btn.className = "levelBtn" + (L.id===activeLevel ? " active" : "");
+    btn.disabled = (L.id > unlockedMax) || (!currentQ && !running && timeLeft===300 && stats.attempted===0 && stats.score===0 && stats.correct===0 && el("problemText").textContent.includes("Press"));
+    // The disable logic above is conservative; we also enable via begin/reset functions.
+
+    const locked = (L.id > unlockedMax);
+    btn.innerHTML = `
+      <div class="top">
+        <span class="name">${L.name} ${locked ? `<span class="lock">🔒</span>` : ""}</span>
+        <span class="pts">${L.pts} pts</span>
+      </div>
+      <div class="desc">${L.desc}</div>
+    `;
+
+    btn.addEventListener("click", ()=>{
+      if(L.id > unlockedMax) return;
+      activeLevel = L.id;
+      renderLevels();
+      newQuestion();
+    });
+    wrap.appendChild(btn);
+  }
+}
+
+function enableLevelButtons(enable){
+  for(const btn of el("levels").querySelectorAll("button")){
+    btn.disabled = !enable; // we’ll re-render for lock states
+  }
+}
+
+/* ---------------- Question generation & choices ---------------- */
+function generateQuestion(levelId){
+  const L = LEVELS.find(x=>x.id===levelId);
+  return L.generator();
+}
+
+function buildChoices(correctRoots){
+  // Build 12 options: include the (unique) correct roots plus distractors
+  const [r1, r2] = correctRoots;
+  const correctSet = uniq([r1, r2]);
+
+  const pool = [];
+
+  // Nearby distractors
+  for(const r of correctSet){
+    pool.push(r-1, r+1, r-2, r+2, r+3, r-3);
+  }
+
+  // Some “typical wrong” numbers
+  pool.push(0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9);
+
+  // Keep within a sensible range
+  const cleaned = uniq(pool.filter(n => Number.isInteger(n) && Math.abs(n) <= 20 && !correctSet.includes(n)));
+
+  shuffle(cleaned);
+
+  // Aim for 12 total buttons
+  const needed = Math.max(10, 12 - correctSet.length);
+  const distractors = cleaned.slice(0, needed);
+
+  let options = uniq([...correctSet, ...distractors]);
+  // If still too few, pad
+  while(options.length < 12){
+    const n = randInt(-20, 20);
+    if(!options.includes(n) && !correctSet.includes(n)) options.push(n);
+  }
+
+  options = options.slice(0, 12);
+  shuffle(options);
+  return options;
+}
+
+function renderChoices(options){
+  const wrap = el("choices");
+  wrap.innerHTML = "";
+  for(const n of options){
+    const b = document.createElement("button");
+    b.className = "choice";
+    b.type = "button";
+    b.textContent = String(n);
+    b.addEventListener("click", ()=>{
+      if(!currentQ || (running && timeLeft<=0)) return;
+
+      if(selected.includes(n)){
+        selected = selected.filter(x=>x!==n);
+        b.classList.remove("selected");
+      } else {
+        if(selected.length >= 2) return;
+        selected.push(n);
+        b.classList.add("selected");
+      }
+      updateHUD();
+    });
+    wrap.appendChild(b);
+  }
+}
+
+/* ---------------- Game flow ---------------- */
+function newQuestion(){
+  if(running && timeLeft <= 0) return;
+
+  clearFeedback();
+  selected = [];
+  updateHUD();
+
+  currentQ = generateQuestion(activeLevel);
+  el("problemText").innerHTML = currentQ.display;
+  el("instruction").textContent = "Select the two solutions (roots) then press Check.";
+  logLine(`[L${currentQ.level}] ${currentQ.display}`);
+
+  const options = buildChoices(currentQ.roots);
+  renderChoices(options);
+
+  // Enable controls
+  el("checkBtn").disabled = false;
+  el("nextBtn").disabled = false;
+  el("revealBtn").disabled = false;
+}
+
+function revealAnswer(noPoints=true){
+  if(!currentQ) return;
+
+  // Reveal styling
+  const buttons = [...el("choices").querySelectorAll("button.choice")];
+  const correct = uniq(currentQ.roots);
+
+  for(const b of buttons){
+    const val = Number(b.textContent);
+    if(correct.includes(val)) b.classList.add("correctReveal");
+    if(selected.includes(val) && !correct.includes(val)) b.classList.add("wrongReveal");
+  }
+
+  if(noPoints){
+    setFeedback(false, `Answer revealed: <code>x = ${currentQ.roots[0]}</code> and <code>x = ${currentQ.roots[1]}</code>. (No points awarded.)`);
+  }
+}
+
+function checkAnswer(){
+  if(!currentQ){
+    setFeedback(false, "Start a run (or Reset) and generate a question first.");
+    return;
+  }
+  if(selected.length !== 2){
+    setFeedback(false, "Please select exactly <strong>two</strong> solutions.");
+    return;
+  }
+  if(running && timeLeft <= 0) return;
+
+  stats.attempted++;
+
+  const correct = uniq(currentQ.roots).sort((a,b)=>a-b);
+  const got = [...selected].sort((a,b)=>a-b);
+
+  const isCorrect = (got.length === correct.length)
+    ? got.every((v,i)=>v===correct[i])
+    : (
+        // If roots are equal (double root), allow selecting same root twice is impossible in UI,
+        // so in that case we treat selecting the single root plus any other as incorrect.
+        false
+      );
+
+  if(isCorrect){
+    stats.correct++;
+    stats.score += currentQ.pts;
+
+    if(currentQ.level === unlockedMax && unlockedMax < 4){
+      unlockedMax++;
+      setFeedback(true, `Correct ✅ +${currentQ.pts} points. You’ve unlocked <strong>Level ${unlockedMax}</strong>.`);
+    } else {
+      setFeedback(true, `Correct ✅ +${currentQ.pts} points.`);
+    }
+  } else {
+    setFeedback(false, `Not quite. Correct solutions: <code>x = ${currentQ.roots[0]}</code> and <code>x = ${currentQ.roots[1]}</code>.`);
+  }
+
+  // Reveal correct/wrong buttons briefly
+  revealAnswer(false);
+
+  updateHUD();
+  renderLevels();
+}
+
+/* ---------------- Timer ---------------- */
+function stopTimer(){
+  running = false;
+  if(timerHandle) clearInterval(timerHandle);
+  timerHandle = null;
+}
+
+function startRun(){
+  // fresh 5 min
+  stopTimer();
+  running = true;
+  timeLeft = 300;
+
+  // reset stats for the run
+  stats = { score:0, correct:0, attempted:0 };
+  unlockedMax = 1;
+  activeLevel = 1;
+  currentQ = null;
+  selected = [];
+  clearFeedback();
+  el("log").value = "";
+
+  updateHUD();
+  renderLevels();
+
+  // enable everything
+  el("checkBtn").disabled = false;
+  el("nextBtn").disabled = false;
+  el("revealBtn").disabled = false;
+
+  newQuestion();
+
+  timerHandle = setInterval(()=>{
+    timeLeft--;
+    if(timeLeft <= 0){
+      timeLeft = 0;
+      updateHUD();
+      stopTimer();
+
+      // lock gameplay
+      el("checkBtn").disabled = true;
+      el("nextBtn").disabled = true;
+      el("revealBtn").disabled = true;
+
+      setFeedback(true, `<strong>Time!</strong> Final score: <strong>${stats.score}</strong> points (Correct: ${stats.correct}/${stats.attempted}). Press <strong>Start</strong> for a new run.`);
+      return;
+    }
+    updateHUD();
+  }, 1000);
+}
+
+function resetNoTimer(){
+  // practice mode without countdown
+  stopTimer();
+  running = false;
+  timeLeft = 300;
+
+  stats = { score:0, correct:0, attempted:0 };
+  unlockedMax = 4;      // in practice mode, unlock all for convenience
+  activeLevel = 1;
+  currentQ = null;
+  selected = [];
+  clearFeedback();
+  el("log").value = "";
+
+  updateHUD();
+  renderLevels();
+
+  newQuestion();
+}
+
+/* ---------------- Wire up ---------------- */
+el("startBtn").addEventListener("click", ()=>{
+  startRun();
+});
+el("resetBtn").addEventListener("click", ()=>{
+  resetNoTimer();
+});
+el("checkBtn").addEventListener("click", ()=>{
+  checkAnswer();
+});
+el("nextBtn").addEventListener("click", ()=>{
+  newQuestion();
+});
+el("revealBtn").addEventListener("click", ()=>{
+  revealAnswer(true);
+});
+
+// initial disable until start/reset
+el("checkBtn").disabled = true;
+el("nextBtn").disabled = true;
+el("revealBtn").disabled = true;
+
+updateHUD();
+renderLevels();
+</script>
+</body>
+</html>
