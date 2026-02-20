@@ -6,101 +6,97 @@
 <title>Quadratics Sprint</title>
 
 <style>
-:root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-body { max-width:1100px; margin:24px auto; padding:0 16px; }
-h1 { margin:0 0 6px; }
-.muted { color:#666; }
+  :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  body { max-width:1100px; margin:24px auto; padding:0 16px; }
+  h1 { margin:0 0 6px; }
+  .muted { color:#666; }
 
-.row { display:grid; grid-template-columns:1.2fr .8fr; gap:14px; margin-top:14px; }
-@media(max-width:900px){ .row{ grid-template-columns:1fr; } }
+  .row { display:grid; grid-template-columns:1.2fr .8fr; gap:14px; margin-top:14px; }
+  @media(max-width:900px){ .row{ grid-template-columns:1fr; } }
 
-.card { border:1px solid #ddd; border-radius:14px; padding:14px; }
-.bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
-.pill { padding:6px 10px; border-radius:999px; background:#f1f1f1; }
-.bigTimer { font-size:1.3rem; font-weight:800; }
+  .card { border:1px solid #ddd; border-radius:14px; padding:14px; }
+  .bar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+  .pill { padding:6px 10px; border-radius:999px; background:#f1f1f1; }
+  .bigTimer { font-size:1.3rem; font-weight:800; }
 
-.problem { margin-top:12px; padding:12px 14px; border-radius:12px; background:#f6f6f6; font-size:1.3rem; }
+  .problem { margin-top:12px; padding:12px 14px; border-radius:12px; background:#f6f6f6; font-size:1.3rem; }
 
-button {
-  font-size:1rem; padding:10px 12px;
-  border-radius:12px; border:1px solid #222;
-  background:#222; color:#fff; cursor:pointer;
-}
-button.secondary { background:#fff; color:#222; border:1px solid #aaa; }
-button:disabled { opacity:.55; cursor:not-allowed; }
+  button{
+    font-size:1rem; padding:10px 12px;
+    border-radius:12px; border:1px solid #222;
+    background:#222; color:#fff; cursor:pointer;
+  }
+  button.secondary { background:#fff; color:#222; border:1px solid #aaa; }
+  button:disabled { opacity:.55; cursor:not-allowed; }
 
-.levels { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px; }
-@media(max-width:700px){ .levels{ grid-template-columns:1fr 1fr; } }
+  .levels { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px; }
+  @media(max-width:700px){ .levels{ grid-template-columns:1fr 1fr; } }
 
-.levelBtn {
-  background:#fff; color:#222; border:1px solid #aaa;
-  padding:12px; border-radius:12px;
-}
-.levelBtn.active { border:2px solid #222; }
+  .levelBtn{
+    background:#fff; color:#222; border:1px solid #aaa;
+    padding:12px; border-radius:12px;
+  }
+  .levelBtn.active { border:2px solid #222; }
 
-.choices { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:12px; }
-@media(max-width:900px){ .choices{ grid-template-columns:repeat(4,1fr); } }
+  .choices { display:grid; grid-template-columns:repeat(6,1fr); gap:10px; margin-top:12px; }
+  @media(max-width:900px){ .choices{ grid-template-columns:repeat(4,1fr); } }
+  @media(max-width:520px){ .choices{ grid-template-columns:repeat(3,1fr); } }
 
-.choice {
-  background:#fff; color:#222; border:1px solid #bbb;
-  border-radius:12px; padding:10px 8px;
-}
-.choice.selected { border:2px solid #222; background:#f0f0f0; }
-.choice.correctReveal { border:2px solid #1a7f37; }
-.choice.wrongReveal { border:2px solid #b42318; }
+  /* IMPORTANT: override button text colour so it shows on white */
+  .choice{
+    background:#fff; color:#222; border:1px solid #bbb;
+    border-radius:12px; padding:10px 8px;
+  }
+  .choice.selected { border:2px solid #222; background:#f0f0f0; }
+  .choice.correctReveal { border:2px solid #1a7f37; }
+  .choice.wrongReveal { border:2px solid #b42318; }
 
-.feedback { margin-top:12px; padding:10px 12px; border-radius:12px; }
-.ok { background:#e7f7ea; border:1px solid #8bd39a; }
-.no { background:#fdecec; border:1px solid #f0a0a0; }
+  .feedback { margin-top:12px; padding:10px 12px; border-radius:12px; }
+  .ok { background:#e7f7ea; border:1px solid #8bd39a; }
+  .no { background:#fdecec; border:1px solid #f0a0a0; }
 
-textarea { width:100%; box-sizing:border-box; padding:10px; border-radius:12px; border:1px solid #ccc; }
+  textarea { width:100%; box-sizing:border-box; padding:10px; border-radius:12px; border:1px solid #ccc; }
 </style>
 </head>
 
 <body>
-
 <h1>Quadratics Sprint</h1>
 <div class="muted">Five minutes. Choose a level. Click the two solutions.</div>
 
 <div class="row">
+  <div class="card">
+    <div class="bar">
+      <span class="pill">Time: <span id="timer" class="bigTimer">05:00</span></span>
+      <span class="pill">Score: <strong id="score">0</strong></span>
+      <span class="pill">Unlocked: <strong id="unlock">1–1</strong></span>
+    </div>
 
-<div class="card">
-<div class="bar">
-<span class="pill">Time: <span id="timer" class="bigTimer">05:00</span></span>
-<span class="pill">Score: <strong id="score">0</strong></span>
-<span class="pill">Unlocked: <strong id="unlock">1–1</strong></span>
-</div>
+    <div style="margin-top:12px;">
+      <button id="startBtn">Start 5-minute run</button>
+      <button id="resetBtn" class="secondary">Reset (no timer)</button>
+    </div>
 
-<div style="margin-top:12px;">
-<button id="startBtn">Start 5-minute run</button>
-<button id="resetBtn" class="secondary">Reset (no timer)</button>
-</div>
+    <div class="levels" id="levels"></div>
 
-<div class="levels" id="levels"></div>
+    <div class="problem" id="problem">Press Start or Reset.</div>
 
-<div class="problem" id="problem">Press Start or Reset.</div>
+    <div class="choices" id="choices"></div>
 
-<div class="choices" id="choices"></div>
+    <div style="margin-top:12px;">
+      <button id="checkBtn">Check</button>
+    </div>
 
-<div style="margin-top:12px;">
-<button id="checkBtn">Check</button>
-<button id="nextBtn" class="secondary">Next</button>
-</div>
+    <div id="feedback"></div>
+  </div>
 
-<div id="feedback"></div>
-</div>
-
-<div class="card">
-<h3>History</h3>
-<textarea id="log" rows="15" readonly></textarea>
-</div>
-
+  <div class="card">
+    <h3>History</h3>
+    <textarea id="log" rows="15" readonly></textarea>
+  </div>
 </div>
 
 <script>
-
 /* ---------- Utilities ---------- */
-
 function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
 function pickNonZero(min,max){ let n=0; while(n===0) n=randInt(min,max); return n; }
 
@@ -116,16 +112,16 @@ function reduce(n,d){
   const g=gcd(n,d);
   return {n:n/g, d:d/g};
 }
-
 function ratKey(r){ return r.n+"/"+r.d; }
-function ratDisplay(r){ return r.d===1 ? r.n : r.n+"/"+r.d; }
+function ratDisplay(r){ return r.d===1 ? String(r.n) : (r.n+"/"+r.d); }
 
 function pretty(a,b,c){
   const t=(coef,label,first=false)=>{
     if(coef===0) return "";
     const sign=coef>0?"+":"-";
     const abs=Math.abs(coef);
-    const core=(label && abs===1?"":abs)+label;
+    const coefStr=(label && abs===1) ? "" : String(abs);
+    const core=coefStr + label;
     if(first) return (coef<0?"-":"")+core;
     return " "+sign+" "+core;
   };
@@ -133,224 +129,319 @@ function pretty(a,b,c){
 }
 
 /* ---------- Levels ---------- */
-
 const LEVELS=[
-{
-name:"Easy", pts:1,
-gen:()=>{
-let r1=pickNonZero(-9,9), r2;
-do{ r2=pickNonZero(-9,9); } while(r2===r1);
-return{
-display:`(x${r1<0?`+${-r1}`:`-${r1}`})(x${r2<0?`+${-r2}`:`-${r2}`}) = 0`,
-roots:[{n:r1,d:1},{n:r2,d:1}]
-};
-}
-},
-{
-name:"Medium", pts:4,
-gen:()=>{
-let r1,r2;
-do{
-r1=pickNonZero(-7,7);
-r2=pickNonZero(-7,7);
-}while(r2===r1 || Math.abs(r1*r2)>36);
-return{
-display:pretty(1,-(r1+r2),r1*r2)+" = 0",
-roots:[{n:r1,d:1},{n:r2,d:1}]
-};
-}
-},
-{
-name:"Hard", pts:6,
-gen:()=>{
-let r1,r2;
-do{
-r1=pickNonZero(-14,14);
-r2=pickNonZero(-14,14);
-}while(r2===r1 || Math.abs(r1*r2)<40);
-return{
-display:pretty(1,-(r1+r2),r1*r2)+" = 0",
-roots:[{n:r1,d:1},{n:r2,d:1}]
-};
-}
-},
-{
-name:"Expert", pts:10,
-gen:()=>{
-let m,p,n,q,a,b,c,r1,r2;
-while(true){
-m=pickNonZero(2,6);
-p=pickNonZero(2,6);
-if(Math.random()<.5) m=-m;
-if(Math.random()<.5) p=-p;
-a=m*p;
-n=pickNonZero(-12,12);
-q=pickNonZero(-12,12);
-b=m*q+p*n;
-c=n*q;
-if(gcd3(a,b,c)!==1) continue;
-r1=reduce(-n,m);
-r2=reduce(-q,p);
-if(ratKey(r1)===ratKey(r2)) continue;
-break;
-}
-return{
-display:pretty(a,b,c)+" = 0",
-roots:[r1,r2]
-};
-}
-}
+  {
+    name:"Easy", pts:1,
+    gen:()=>{
+      let r1=pickNonZero(-9,9), r2;
+      do{ r2=pickNonZero(-9,9); } while(r2===r1); // no repeats
+      return{
+        display:`(x${r1<0?`+${-r1}`:`-${r1}`})(x${r2<0?`+${-r2}`:`-${r2}`}) = 0`,
+        roots:[{n:r1,d:1},{n:r2,d:1}]
+      };
+    }
+  },
+  {
+    name:"Medium", pts:4,
+    gen:()=>{
+      let r1,r2;
+      do{
+        r1=pickNonZero(-7,7);
+        r2=pickNonZero(-7,7);
+      }while(r2===r1 || Math.abs(r1*r2)>36); // no repeats, easy product
+      return{
+        display:pretty(1,-(r1+r2),r1*r2)+" = 0",
+        roots:[{n:r1,d:1},{n:r2,d:1}]
+      };
+    }
+  },
+  {
+    name:"Hard", pts:6,
+    gen:()=>{
+      let r1,r2;
+      do{
+        r1=pickNonZero(-14,14);
+        r2=pickNonZero(-14,14);
+      }while(r2===r1 || Math.abs(r1*r2)<40); // no repeats, bigger product
+      return{
+        display:pretty(1,-(r1+r2),r1*r2)+" = 0",
+        roots:[{n:r1,d:1},{n:r2,d:1}]
+      };
+    }
+  },
+  {
+    name:"Expert", pts:10,
+    gen:()=>{
+      // Build from (mx+n)(px+q)=0 with:
+      // - non-monic a=mp (m,p in 2..6 with signs)
+      // - gcd(a,b,c)=1 (no common factor)
+      // - distinct reduced rational roots
+      let m,p,n,q,a,b,c,r1,r2;
+
+      while(true){
+        m=pickNonZero(2,6);
+        p=pickNonZero(2,6);
+        if(Math.random()<.5) m=-m;
+        if(Math.random()<.5) p=-p;
+
+        a=m*p; // non-monic automatically (|a|>=4)
+        n=pickNonZero(-12,12);
+        q=pickNonZero(-12,12);
+
+        b=m*q+p*n;
+        c=n*q;
+
+        if(gcd3(a,b,c)!==1) continue;
+
+        r1=reduce(-n,m);
+        r2=reduce(-q,p);
+
+        if(ratKey(r1)===ratKey(r2)) continue; // no repeated roots
+
+        // keep in a sensible range for button options
+        const v1=r1.n/r1.d, v2=r2.n/r2.d;
+        if(Math.abs(v1)>15 || Math.abs(v2)>15) continue;
+
+        break;
+      }
+
+      return{
+        display:pretty(a,b,c)+" = 0",
+        roots:[r1,r2]
+      };
+    }
+  }
 ];
 
 /* ---------- Game State ---------- */
-
 let unlocked=1;
 let active=1;
 let current=null;
 let selected=[];
 let score=0;
+
 let time=300;
 let timer=null;
 let running=false;
 
+/* ---------- UI Helpers ---------- */
 function updateHUD(){
-document.getElementById("timer").textContent=
-String(Math.floor(time/60)).padStart(2,"0")+":"+String(time%60).padStart(2,"0");
-document.getElementById("score").textContent=score;
-document.getElementById("unlock").textContent="1–"+unlocked;
+  document.getElementById("timer").textContent=
+    String(Math.floor(time/60)).padStart(2,"0")+":"+String(time%60).padStart(2,"0");
+  document.getElementById("score").textContent=score;
+  document.getElementById("unlock").textContent="1–"+unlocked;
 }
 
 function renderLevels(){
-const wrap=document.getElementById("levels");
-wrap.innerHTML="";
-LEVELS.forEach((L,i)=>{
-const btn=document.createElement("button");
-btn.className="levelBtn"+(i+1===active?" active":"");
-btn.textContent=L.name+" ("+L.pts+" pts)";
-btn.disabled=(i+1>unlocked);
-btn.onclick=()=>{
-active=i+1;
-renderLevels();
-newQuestion();
-};
-wrap.appendChild(btn);
-});
+  const wrap=document.getElementById("levels");
+  wrap.innerHTML="";
+  LEVELS.forEach((L,i)=>{
+    const lvl=i+1;
+    const btn=document.createElement("button");
+    btn.className="levelBtn"+(lvl===active?" active":"");
+    btn.textContent=L.name+" ("+L.pts+" pts)";
+    btn.disabled=(lvl>unlocked) || (running && time<=0);
+
+    btn.onclick=()=>{
+      active=lvl;
+      renderLevels();
+      newQuestion();  // new question always comes from clicking a level
+    };
+    wrap.appendChild(btn);
+  });
 }
 
-function newQuestion(){
-selected=[];
-current=LEVELS[active-1].gen();
-document.getElementById("problem").textContent=current.display;
-log(current.display);
-buildChoices();
-renderLevels();
-}
-
-function buildChoices(){
-const wrap=document.getElementById("choices");
-wrap.innerHTML="";
-const correctKeys=current.roots.map(ratKey);
-let options=[...correctKeys];
-
-while(options.length<12){
-let r;
-if(active<4){
-const n=randInt(-20,20);
-r={n,d:1};
-}else{
-const d=randInt(2,6);
-const n=pickNonZero(-12,12);
-r=reduce(n,d);
-}
-const key=ratKey(r);
-if(!options.includes(key)) options.push(key);
-}
-options.sort(()=>Math.random()-0.5);
-
-options.forEach(key=>{
-const [n,d]=key.split("/");
-const r={n:+n,d:+d};
-const btn=document.createElement("button");
-btn.className="choice";
-btn.textContent=ratDisplay(r);
-btn.onclick=()=>{
-if(selected.includes(key)){
-selected=selected.filter(k=>k!==key);
-btn.classList.remove("selected");
-}else if(selected.length<2){
-selected.push(key);
-btn.classList.add("selected");
-}
-};
-wrap.appendChild(btn);
-});
-}
-
-function checkAnswer(){
-const correct=current.roots.map(ratKey).sort();
-const got=[...selected].sort();
-const ok=JSON.stringify(correct)===JSON.stringify(got);
-
-if(ok){
-score+=LEVELS[active-1].pts;
-if(active===unlocked && unlocked<4) unlocked++;
-show(true,"Correct!");
-}else{
-show(false,"Incorrect.");
-}
-updateHUD();
+function logLine(text){
+  const area=document.getElementById("log");
+  area.value=text+"\n"+area.value;
 }
 
 function show(ok,msg){
-const box=document.getElementById("feedback");
-box.innerHTML=`<div class="feedback ${ok?"ok":"no"}">${msg}</div>`;
+  const box=document.getElementById("feedback");
+  box.innerHTML=`<div class="feedback ${ok?"ok":"no"}">${msg}</div>`;
 }
 
-function log(text){
-const area=document.getElementById("log");
-area.value=text+"\n"+area.value;
+/* ---------- Question & Choices ---------- */
+function newQuestion(){
+  if(running && time<=0) return;
+
+  selected=[];
+  current=LEVELS[active-1].gen();
+  document.getElementById("problem").textContent=current.display;
+  logLine(`[${LEVELS[active-1].name}] ${current.display}`);
+
+  buildChoices();
+
+  // IMPORTANT: allow checking exactly once per question
+  document.getElementById("checkBtn").disabled=false;
+
+  // clear any old feedback
+  document.getElementById("feedback").innerHTML="";
+
+  renderLevels();
+}
+
+function buildChoices(){
+  const wrap=document.getElementById("choices");
+  wrap.innerHTML="";
+
+  const correctKeys=current.roots.map(ratKey);
+  let options=[...new Set(correctKeys)];
+
+  // pad to 12 options
+  while(options.length<12){
+    let r;
+    if(active<4){
+      const n=randInt(-20,20);
+      r={n, d:1};
+    }else{
+      const d=randInt(2,6);
+      const n=pickNonZero(-12,12);
+      r=reduce(n,d);
+      // keep distractors in range too
+      if(Math.abs(r.n/r.d)>15) continue;
+    }
+    const key=ratKey(r);
+    if(!options.includes(key)) options.push(key);
+  }
+
+  // shuffle
+  options.sort(()=>Math.random()-0.5);
+
+  options.forEach(key=>{
+    const [n,d]=key.split("/");
+    const r={n:+n, d:+d};
+
+    const btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent=ratDisplay(r);
+    btn.dataset.key=key;
+
+    btn.onclick=()=>{
+      if(running && time<=0) return;
+
+      if(selected.includes(key)){
+        selected=selected.filter(k=>k!==key);
+        btn.classList.remove("selected");
+      }else if(selected.length<2){
+        selected.push(key);
+        btn.classList.add("selected");
+      }
+    };
+
+    wrap.appendChild(btn);
+  });
+}
+
+/* ---------- Marking ---------- */
+function checkAnswer(){
+  if(!current) return;
+
+  // prevent re-checking the same question for points
+  const checkBtn=document.getElementById("checkBtn");
+  if(checkBtn.disabled) return;
+
+  if(selected.length!==2){
+    show(false,"Please select exactly two solutions.");
+    return;
+  }
+
+  const correct=current.roots.map(ratKey).sort();
+  const got=[...selected].sort();
+  const ok=JSON.stringify(correct)===JSON.stringify(got);
+
+  // reveal borders
+  const buttons=[...document.querySelectorAll("#choices button.choice")];
+  const correctSet=new Set(correct);
+  buttons.forEach(b=>{
+    const key=b.dataset.key;
+    if(correctSet.has(key)) b.classList.add("correctReveal");
+    if(selected.includes(key) && !correctSet.has(key)) b.classList.add("wrongReveal");
+  });
+
+  if(ok){
+    score+=LEVELS[active-1].pts;
+    if(active===unlocked && unlocked<4) unlocked++;
+    show(true,"Correct! +" + LEVELS[active-1].pts + " points.");
+  }else{
+    show(false,"Incorrect.");
+  }
+
+  updateHUD();
+  renderLevels();
+
+  // IMPORTANT: only one check per question (prevents farming points)
+  checkBtn.disabled=true;
+}
+
+/* ---------- Timer ---------- */
+function stopTimer(){
+  if(timer) clearInterval(timer);
+  timer=null;
+  running=false;
 }
 
 function startRun(){
-resetGame();
-running=true;
-timer=setInterval(()=>{
-time--;
-if(time<=0){
-clearInterval(timer);
-running=false;
-show(true,"Time! Final score: "+score);
-}
-updateHUD();
-},1000);
+  // fresh run
+  stopTimer();
+  running=true;
+
+  time=300;
+  score=0;
+  unlocked=1;
+  active=1;
+  current=null;
+  selected=[];
+
+  document.getElementById("log").value="";
+  document.getElementById("feedback").innerHTML="";
+  updateHUD();
+  renderLevels();
+
+  newQuestion();
+
+  timer=setInterval(()=>{
+    time--;
+    if(time<=0){
+      time=0;
+      updateHUD();
+      stopTimer();
+
+      document.getElementById("checkBtn").disabled=true;
+      show(true,"Time! Final score: "+score+". Choose Start to play again or Reset to practise.");
+      renderLevels();
+      return;
+    }
+    updateHUD();
+  },1000);
 }
 
 function resetGame(){
-if(timer) clearInterval(timer);
-running=false;
-time=300;
-score=0;
-unlocked=1;
-active=1;
-selected=[];
-document.getElementById("log").value="";
-document.getElementById("feedback").innerHTML="";
-updateHUD();
-renderLevels();
-newQuestion();
+  // practice mode: no timer running, BUT reset returns to level 1 unlocked
+  stopTimer();
+
+  time=300;
+  score=0;
+  unlocked=1;
+  active=1;
+  current=null;
+  selected=[];
+
+  document.getElementById("log").value="";
+  document.getElementById("feedback").innerHTML="";
+  updateHUD();
+  renderLevels();
+
+  newQuestion();
 }
 
 /* ---------- Wire ---------- */
-
 document.getElementById("startBtn").onclick=startRun;
 document.getElementById("resetBtn").onclick=resetGame;
 document.getElementById("checkBtn").onclick=checkAnswer;
-document.getElementById("nextBtn").onclick=newQuestion;
 
 updateHUD();
 renderLevels();
-
 </script>
 </body>
 </html>
-
